@@ -95,6 +95,101 @@ style frame:
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#say
 
+screen sandwich_tutorial():
+    # Tutorial overlay with instructions
+    frame:
+        xalign 0.5
+        yalign 0.1
+        xsize 600
+        ysize 120
+        background "#000000CC"
+
+        vbox:
+            xalign 0.5
+            yalign 0.5
+            spacing 10
+
+            text "TUTORIAL: How to Make a Sandwich" xalign 0.5 size 24 color "#FFFFFF"
+            text "1. Click on the ingredient jars to spawn them" xalign 0.5 size 18 color "#FFFFFF"
+            text "2. Drag ingredients to the plate in the correct order" xalign 0.5 size 18 color "#FFFFFF"
+            text "3. Complete order: Bread → Peanut Butter → Jelly → Top Bread" xalign 0.5 size 18 color "#FFFFFF"
+
+    # Jars: always visible, clicking them sets the store variable so the draggable appears.
+    imagebutton:
+        idle Transform("pb.png", xsize=64, ysize=64)
+        focus_mask True
+        xalign 0.25
+        yalign 0.25
+        action SetVariable("pb_spawned", True)
+
+    imagebutton:
+        idle Transform("jam.png", xsize=64, ysize=64)
+        focus_mask True
+        xalign 0.35
+        yalign 0.25
+        action SetVariable("jam_spawned", True)
+
+    draggroup:
+        # Plate (target) - highlighted for tutorial
+        drag:
+            drag_name "plate"
+            child Transform("untitled.jpg", xysize=(200, 200))
+            draggable False
+            droppable True
+            xalign 0.5
+            yalign 0.5
+            dropped place_ingredient
+
+        # Draggables (spawned when jar clicked)
+        if pb_spawned:
+            drag:
+                drag_name "peanutbutter"
+                child Transform("peanutbutter.png", xysize=(120, 120))
+                draggable True
+                xpos 350 ypos 100
+
+        if jam_spawned:
+            drag:
+                drag_name "jelly"
+                child Transform("jelly.png", xysize=(120, 120))
+                draggable True
+                xpos 550 ypos 100
+
+        # Lower bread
+        drag:
+            drag_name "lower_bread"
+            child Transform("lower_bread.png", xysize=(120, 120))
+            draggable True
+            xpos 150 ypos 100
+
+        # Top bread
+        drag:
+            drag_name "topmost_bread"
+            child Transform("topmost_bread.png", xysize=(120, 120))
+            draggable True
+            xpos 750 ypos 100
+
+    # Tutorial completion check
+    if has_won:
+        frame:
+            xalign 0.5
+            yalign 0.5
+            xsize 400
+            ysize 200
+            background "#000000CC"
+
+            vbox:
+                xalign 0.5
+                yalign 0.5
+                spacing 20
+
+                text "Tutorial Complete!" xalign 0.5 size 32 color "#00FF00"
+                text "Great job! You've learned the basics." xalign 0.5 size 18 color "#FFFFFF"
+
+                textbutton "Continue":
+                    xalign 0.5
+                    action [Return("tutorial_complete"), SetVariable("has_won", False), SetVariable("tutorial_completed", True)]
+
 screen sandwich_game():
     # Jars: always visible, clicking them sets the store variable so the draggable appears.
     imagebutton:
