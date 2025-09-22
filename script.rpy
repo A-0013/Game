@@ -13,6 +13,14 @@ default has_won = False
 default placed_parts = []
 default tutorial_completed = False
 
+# Two-order mini-game state
+default placed_parts1 = []
+default placed_parts2 = []
+default order1_complete = False
+default order2_complete = False
+default required_order1 = ["lower_bread", "peanutbutter", "jelly", "topmost_bread"]
+default required_order2 = ["lower_bread", "peanutbutter", "jelly", "topmost_bread"]
+
 # The game starts here.
 label start:
     #make a 'set' of sandwhich pieces (when all the pieces of the set are together its a win)
@@ -105,79 +113,79 @@ label no:
     jump inside
 
     #### Game continues after choice ###
-    label inside:
+label inside:
 
-        scene fast_food_interior_day
-        with fade
+    scene fast_food_interior_day
+    with fade
 
-        r "Here we have the inside of the beatiful humble sandwich shop!"
+    r "Here we have the inside of the beatiful humble sandwich shop!"
 
-        show Reina smile:
-            zoom 0.25 xalign 0.5 yalign 1.0
-        with dissolve
+    show Reina smile:
+        zoom 0.25 xalign 0.5 yalign 1.0
+    with dissolve
 
-        r "Pretty cool huh?"
+    r "Pretty cool huh?"
 
-        m "It's pretty neat I guess."
+    m "It's pretty neat I guess."
 
-        r "So you're new to the art of sandwich making huh?"
+    r "So you're new to the art of sandwich making huh?"
 
-        m "Apparently..."
+    m "Apparently..."
 
-        show Reina wink
+    show Reina wink
 
-        r "Well it's a good thing you ran into me first. I'll have you know I'm best the sandwich builder in the shop."
+    r "Well it's a good thing you ran into me first. I'll have you know I'm best the sandwich builder in the shop."
 
-        r "No one can do it better than me. I'll be happy to show you the ropes."
+    r "No one can do it better than me. I'll be happy to show you the ropes."
 
-        show Reina laugh
+    show Reina laugh
 
-        r "Ok lets get to sandwich making!"
+    r "Ok lets get to sandwich making!"
 
-        r "We'll start by making a basic PB&J and BLT!"
+    r "We'll start by making a basic PB&J and BLT!"
 
-        "You could speak at a normal volume y'know..."
+    "You could speak at a normal volume y'know..."
 
-        show Reina smile
+    show Reina smile
 
-        r "Pay attention now. Game mechanics are coming in hot!"
+    r "Pay attention now. Game mechanics are coming in hot!"
 
-        r "Use you mouse to drag and drop the items in the correct order"
+    r "Use you mouse to drag and drop the items in the correct order"
 
-        show Reina laugh
+    show Reina laugh
 
-        r "It's as simple as that!"
+    r "It's as simple as that!"
 
-        ############ Post-Tutorial #############
+    ############ Post-Tutorial #############
 
-        # Call the tutorial first
-        call screen sandwich_tutorial
+    # Call the tutorial first
+    call screen sandwich_tutorial
 
-        # After tutorial, show the actual game
-        scene fast_food_interior_day
-        with fade
+    # After tutorial, show the actual game
+    scene fast_food_interior_day
+    with fade
 
-        show Reina smile:
-            zoom 0.25 xalign 0.75 yalign 1.0
-        with dissolve
+    show Reina smile:
+        zoom 0.25 xalign 0.75 yalign 1.0
+    with dissolve
 
-        r "Wow, you built those sandwiches with conviction!"
+    r "Wow, you built those sandwiches with conviction!"
 
-        r "I just know you'll do great here."
+    r "I just know you'll do great here."
 
-        b "Never cease to show up super early, huh Reina?"
+    b "Never cease to show up super early, huh Reina?"
 
-        show Boss normal:
-            xalign 0.25 yalign 0.35
-        with dissolve
+    show Boss normal:
+        xalign 0.25 yalign 0.35
+    with dissolve
 
-        show Reina laugh
+    show Reina laugh
 
-        r "Hehe you know me, I just can't get enough of this place!"
+    r "Hehe you know me, I just can't get enough of this place!"
 
-        show Reina smile
+    show Reina smile
 
-        r "By the way, the new hire got here early too. I was showing them how it's done."
+    r "By the way, the new hire got here early too. I was showing them how it's done."
 
 
         # Second Dialogue Branch
@@ -286,20 +294,35 @@ init python:
         if drag_name is None:
             return
 
-        # Only accept drops on the plate
-        if getattr(drop_target, "drag_name", "") == "plate":
-            if drag_name not in placed_parts:
-                placed_parts.append(drag_name)
+        # Accept drops on plate1 or plate2 and track each order separately
+        target_name = getattr(drop_target, "drag_name", "")
+        if target_name == "plate1":
+            if drag_name not in placed_parts1:
+                placed_parts1.append(drag_name)
 
-            # Win check
-            needed = {"lower_bread", "peanutbutter", "jelly", "topmost_bread"}
-            if needed.issubset(set(placed_parts)):
-                store.has_won = True
-                renpy.restart_interaction()
+            needed1 = set(required_order1)
+            if needed1.issubset(set(placed_parts1)):
+                store.order1_complete = True
+        elif target_name == "plate2":
+            if drag_name not in placed_parts2:
+                placed_parts2.append(drag_name)
+
+            needed2 = set(required_order2)
+            if needed2.issubset(set(placed_parts2)):
+                store.order2_complete = True
+
+        # Overall win when both orders complete
+        if store.order1_complete and store.order2_complete:
+            store.has_won = True
+            renpy.restart_interaction()
 
     # helper to reset the mini-game
     def reset_sandwich():
         placed_parts[:] = []
+        placed_parts1[:] = []
+        placed_parts2[:] = []
         store.pb_spawned = False
         store.jam_spawned = False
+        store.order1_complete = False
+        store.order2_complete = False
         store.has_won = False

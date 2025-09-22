@@ -116,14 +116,14 @@ screen sandwich_tutorial():
 
     # Jars: always visible, clicking them sets the store variable so the draggable appears.
     imagebutton:
-        idle Transform("pb.png", xsize=64, ysize=64)
+        idle Transform("pb", xsize=64, ysize=64)
         focus_mask True
         xalign 0.25
         yalign 0.25
         action SetVariable("pb_spawned", True)
 
     imagebutton:
-        idle Transform("jam.png", xsize=64, ysize=64)
+        idle Transform("jam", xsize=64, ysize=64)
         focus_mask True
         xalign 0.35
         yalign 0.25
@@ -133,7 +133,7 @@ screen sandwich_tutorial():
         # Plate (target) - highlighted for tutorial
         drag:
             drag_name "plate"
-            child Transform("untitled.jpg", xysize=(200, 200))
+            child Transform("untitled", xysize=(200, 200))
             draggable False
             droppable True
             xalign 0.5
@@ -144,28 +144,28 @@ screen sandwich_tutorial():
         if pb_spawned:
             drag:
                 drag_name "peanutbutter"
-                child Transform("peanutbutter.png", xysize=(120, 120))
+                child Transform("peanutbutter", xysize=(120, 120))
                 draggable True
                 xpos 350 ypos 100
 
         if jam_spawned:
             drag:
                 drag_name "jelly"
-                child Transform("jelly.png", xysize=(120, 120))
+                child Transform("jelly", xysize=(120, 120))
                 draggable True
                 xpos 550 ypos 100
 
         # Lower bread
         drag:
             drag_name "lower_bread"
-            child Transform("lower_bread.png", xysize=(120, 120))
+            child Transform("lower_bread", xysize=(120, 120))
             draggable True
             xpos 150 ypos 100
 
         # Top bread
         drag:
             drag_name "topmost_bread"
-            child Transform("topmost_bread.png", xysize=(120, 120))
+            child Transform("topmost_bread", xysize=(120, 120))
             draggable True
             xpos 750 ypos 100
 
@@ -191,72 +191,118 @@ screen sandwich_tutorial():
                     action [Return("tutorial_complete"), SetVariable("has_won", False), SetVariable("tutorial_completed", True)]
 
 screen sandwich_game():
-    # Jars: always visible, clicking them sets the store variable so the draggable appears.
+    # HUD for two orders
+    frame:
+        xalign 0.5
+        yalign 0.05
+        background "#000000aa"
+        padding (20, 10)
+        hbox:
+            spacing 80
+            vbox:
+                text "Order 1" size 24 color "#ffff00" xalign 0.5
+                for i, ingredient in enumerate(required_order1):
+                    $ display_name = "Bottom Bread" if ingredient == "lower_bread" else ("Top Bread" if ingredient == "topmost_bread" else ("Peanut Butter" if ingredient == "peanutbutter" else ("Jelly" if ingredient == "jelly" else ingredient)))
+                    text "[i+1]. [display_name]" size 18 color "#ffff00" xalign 0.5
+                null height 10
+                text "Current:" size 20 color "#ffffff" xalign 0.5
+                if len(placed_parts1) > 0:
+                    for i, ingredient in enumerate(placed_parts1):
+                        $ display_name = "Bottom Bread" if ingredient == "lower_bread" else ("Top Bread" if ingredient == "topmost_bread" else ("Peanut Butter" if ingredient == "peanutbutter" else ("Jelly" if ingredient == "jelly" else ingredient)))
+                        $ text_color = "#00ff00" if ingredient in required_order1 else "#ff0000"
+                        text "[i+1]. [display_name]" size 18 color text_color xalign 0.5
+                else:
+                    text "No ingredients placed yet" size 18 color "#888888" xalign 0.5
+
+            vbox:
+                text "Order 2" size 24 color "#ffff00" xalign 0.5
+                for i, ingredient in enumerate(required_order2):
+                    $ display_name = "Bottom Bread" if ingredient == "lower_bread" else ("Top Bread" if ingredient == "topmost_bread" else ("Peanut Butter" if ingredient == "peanutbutter" else ("Jelly" if ingredient == "jelly" else ingredient)))
+                    text "[i+1]. [display_name]" size 18 color "#ffff00" xalign 0.5
+                null height 10
+                text "Current:" size 20 color "#ffffff" xalign 0.5
+                if len(placed_parts2) > 0:
+                    for i, ingredient in enumerate(placed_parts2):
+                        $ display_name = "Bottom Bread" if ingredient == "lower_bread" else ("Top Bread" if ingredient == "topmost_bread" else ("Peanut Butter" if ingredient == "peanutbutter" else ("Jelly" if ingredient == "jelly" else ingredient)))
+                        $ text_color = "#00ff00" if ingredient in required_order2 else "#ff0000"
+                        text "[i+1]. [display_name]" size 18 color text_color xalign 0.5
+                else:
+                    text "No ingredients placed yet" size 18 color "#888888" xalign 0.5
+
+    # Jars
     imagebutton:
-        idle Transform("pb.png", xsize=64, ysize=64)
+        idle Transform("pb", xsize=64, ysize=64)
         focus_mask True
         xalign 0.25
         yalign 0.25
         action SetVariable("pb_spawned", True)
 
     imagebutton:
-        idle Transform("jam.png", xsize=64, ysize=64)
+        idle Transform("jam", xsize=64, ysize=64)
         focus_mask True
         xalign 0.35
         yalign 0.25
         action SetVariable("jam_spawned", True)
+
     draggroup:
-        # Plate (target)
+        # Plates
         drag:
-            drag_name "plate"
-            child Transform("untitled.jpg", xysize=(200, 200))
+            drag_name "plate1"
+            child Transform("untitled", xysize=(200, 200))
             draggable False
             droppable True
-            xalign 0.5
-            yalign 0.5
+            xpos 300 ypos 350
+            dropped place_ingredient
+
+        drag:
+            drag_name "plate2"
+            child Transform("untitled", xysize=(200, 200))
+            draggable False
+            droppable True
+            xpos 900 ypos 350
             dropped place_ingredient
 
         # Draggables (spawned when jar clicked)
         if pb_spawned:
             drag:
                 drag_name "peanutbutter"
-                child Transform("peanutbutter.png", xysize=(120, 120))
+                child Transform("peanutbutter", xysize=(120, 120))
                 draggable True
-                xpos 350 ypos 100
+                xpos 450 ypos 100
 
         if jam_spawned:
             drag:
                 drag_name "jelly"
-                child Transform("jelly.png", xysize=(120, 120))
+                child Transform("jelly", xysize=(120, 120))
                 draggable True
-                xpos 550 ypos 100
+                xpos 650 ypos 100
 
         # Lower bread
         drag:
             drag_name "lower_bread"
-            child Transform("lower_bread.png", xysize=(120, 120))
+            child Transform("lower_bread", xysize=(120, 120))
             draggable True
             xpos 150 ypos 100
 
         # Top bread
         drag:
             drag_name "topmost_bread"
-            child Transform("topmost_bread.png", xysize=(120, 120))
+            child Transform("topmost_bread", xysize=(120, 120))
             draggable True
-            xpos 750 ypos 100
+            xpos 1050 ypos 100
 
     if has_won:
         frame:
             xalign 0.5
             yalign 0.5
-            text "You won!":
+            text "Both orders complete!":
                 xalign 0.5
                 yalign 0.5
                 size 40
         textbutton "OK":
             xalign 0.5
             yalign 0.7
-            action [Return("win"), SetVariable("has_won", False)]
+            action [Return("win"), SetVariable("has_won", False), SetVariable("order1_complete", False), SetVariable("order2_complete", False), SetVariable("placed_parts1", []), SetVariable("placed_parts2", [])]
 
 
     ## If there's a side image, display it above the text. Do not display on
