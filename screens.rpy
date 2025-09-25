@@ -102,27 +102,26 @@ screen sandwich_game():
         yalign 0.05
         background "#000000aa"
         padding (20, 10)
-        
+       
         hbox:
             spacing 50
-            
+           
             # Required Order
             vbox:
                 text "Required Order:" size 24 color "#ffff00" xalign 0.5
-                
+               
                 for i, ingredient in enumerate(required_sandwich):
                     # this is so much debugging
                     $ display_name = "Bottom Bread" if ingredient == "lower_bread" else ("Top Bread" if ingredient == "topmost_bread" else ("Peanut Butter" if ingredient == "peanutbutter" else ("Jelly" if ingredient == "jelly" else ingredient)))
-                    
+                   
                     text "[i+1]. [display_name]" size 18 color "#ffff00" xalign 0.5
-            
+           
             # Current Progress
             vbox:
                 text "Current Order:" size 24 color "#ffffff" xalign 0.5
-                # Just display what’s actually been placed
+                # Just display what's actually been placed
                 $ plate_display = list(placed_parts)
-
-                
+               
                 if plate_display:
                     for i, ingredient in enumerate(plate_display):
                         $ display_name = "Bottom Bread" if ingredient == "lower_bread" else ("Top Bread" if ingredient == "topmost_bread" else ("Peanut Butter" if ingredient == "peanutbutter" else ("Jelly" if ingredient == "jelly" else ingredient)))
@@ -130,7 +129,48 @@ screen sandwich_game():
                         text "[i+1]. [display_name]" size 18 color text_color xalign 0.5
                 else:
                     text "No ingredients on the plate" size 18 color "#888888" xalign 0.5
-    
+
+    # Spawner buttons row
+    hbox:
+        xpos 50 ypos 200
+        spacing 20
+        
+        # Bread spawner
+        imagebutton:
+            idle Transform("SB.png", xysize=(80, 80))
+            hover Transform("SB.png", xysize=(80, 80))
+            action Function(spawn_bread)
+            
+        # Peanut butter spawner (you'll need PB.png)
+        imagebutton:
+            idle Transform("PB.png", xysize=(80, 80))
+            hover Transform("PB.png", xysize=(80, 80))
+            action Function(spawn_peanut)
+            
+        # Jelly spawner (you'll need JL.png)
+        imagebutton:
+            idle Transform("JL.png", xysize=(80, 80))
+            hover Transform("JL.png", xysize=(80, 80))
+            action Function(spawn_jam)
+            
+        # Bacon spawner (you'll need BC.png)
+        imagebutton:
+            idle Transform("BC.png", xysize=(80, 80))
+            hover Transform("BC.png", xysize=(80, 80))
+            action Function(spawn_bacon)
+            
+        # Lettuce spawner (you'll need LT.png)
+        imagebutton:
+            idle Transform("LT.png", xysize=(80, 80))
+            hover Transform("LT.png", xysize=(80, 80))
+            action Function(spawn_lettuce)
+            
+        # Tomato spawner (you'll need TM.png)
+        imagebutton:
+            idle Transform("TM.png", xysize=(80, 80))
+            hover Transform("TM.png", xysize=(80, 80))
+            action Function(spawn_tomato)
+   
     draggroup:
         # Plate (target)
         drag:
@@ -141,45 +181,56 @@ screen sandwich_game():
             xalign 0.5
             yalign 0.5
             dropped place_ingredient
-
-        # Draggables (spawned when jar clicked)
-        drag:
-            drag_name "peanut"
-            child Transform("Peanut.png", xysize=(120, 120))
-            draggable True
-            xpos 350 ypos 100
-
-        drag:
-            drag_name "jam"
-            child Transform("jamm.png", xysize=(120, 120))
-            draggable True
-            xpos 550 ypos 100
-
-        # Lower bread
-        drag:
-            drag_name "bread"
-            child Transform("bread.png", xysize=(120, 120))
-            draggable True
-            xpos 150 ypos 100
-
-        drag:
-            drag_name "bacon"
-            child Transform("bacon.png", xysize=(120, 120))
-            draggable True
-            xpos 650 ypos 100
-
-        drag:
-            drag_name "lettuc"
-            child Transform("lettuc.png", xysize=(120, 120))
-            draggable True
-            xpos 750 ypos 100
-
-        drag:
-            drag_name "tomato"
-            child Transform("tomato.png", xysize=(120, 120))
-            draggable True
-            xpos 850 ypos 100
-
+        
+        # Spawned ingredient instances
+        for bread_data in bread_spawns:
+            drag:
+                drag_name bread_data['id']
+                child Transform("bread.png", xysize=(120, 120))
+                draggable True
+                xpos bread_data['x']
+                ypos bread_data['y']
+                
+        for peanut_data in peanut_spawns:
+            drag:
+                drag_name peanut_data['id']
+                child Transform("Peanut.png", xysize=(120, 120))
+                draggable True
+                xpos peanut_data['x']
+                ypos peanut_data['y']
+                
+        for jam_data in jam_spawns:
+            drag:
+                drag_name jam_data['id']
+                child Transform("jamm.png", xysize=(120, 120))
+                draggable True
+                xpos jam_data['x']
+                ypos jam_data['y']
+                
+        for bacon_data in bacon_spawns:
+            drag:
+                drag_name bacon_data['id']
+                child Transform("bacon.png", xysize=(120, 120))
+                draggable True
+                xpos bacon_data['x']
+                ypos bacon_data['y']
+                
+        for lettuc_data in lettuc_spawns:
+            drag:
+                drag_name lettuc_data['id']
+                child Transform("lettuc.png", xysize=(120, 120))
+                draggable True
+                xpos lettuc_data['x']
+                ypos lettuc_data['y']
+                
+        for tomato_data in tomato_spawns:
+            drag:
+                drag_name tomato_data['id']
+                child Transform("tomato.png", xysize=(120, 120))
+                draggable True
+                xpos tomato_data['x']
+                ypos tomato_data['y']
+            
     if has_won:
         frame:
             xalign 0.5
@@ -191,7 +242,10 @@ screen sandwich_game():
         textbutton "OK":
             xalign 0.5
             yalign 0.7
-            action [Return("win"), SetVariable("has_won", False)]
+            action [Return("win"), SetVariable("has_won", False), 
+                    SetVariable("bread_spawns", []), SetVariable("peanut_spawns", []),
+                    SetVariable("jam_spawns", []), SetVariable("lettuc_spawns", []),
+                    SetVariable("tomato_spawns", []), SetVariable("bacon_spawns", [])]
 
     ## If there's a side image, display it above the text. Do not display on
     ## the phone variant - there's no room.
