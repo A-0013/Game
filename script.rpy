@@ -6,6 +6,8 @@ default placed_parts = []
 default has_won = False
 default pb_spawned = False
 default jam_spawned = False
+default score = 0  # Add score tracking
+default show_finish_menu = False  # New variable for finish menu
 #yes I did actually do this manually
 default bread_spawns = []  # List to track spawned bread 
 default peanut_spawns = []  # List to track spawned peanut butter 
@@ -13,19 +15,25 @@ default jam_spawns = []  # List to track spawned jelly
 default lettuc_spawns = []  # List to track spawned lettuce 
 default tomato_spawns = []  # List to track spawned tomato 
 default bacon_spawns = []  # List to track spawned bacon 
-default required_sandwich = []
+default required_sandwiches = []  # Now a list of 3 orders
 default placed_on_plate = set()
+default time_left = 30  # countdown timer
+default game_over = False
+default round_number = 1
+
+
 #this is manually done change it later
 #yeah I didn't lmao
 
 
 # The game starts here.
 label start:
-    #resets everything
+    #resets everything except score
     $ placed_parts = []
     $ has_won = False
     $ pb_spawned = False
     $ jam_spawned = False
+    $ show_finish_menu = False
     #more manual work
     $ bread_spawns = []  # Reset bread spawns
     $ peanut_spawns = []  # Reset peanut butter spawns
@@ -33,7 +41,9 @@ label start:
     $ lettuc_spawns = []  # Reset lettuce spawns
     $ tomato_spawns = []  # Reset tomato spawns
     $ bacon_spawns = []  # Reset bacon spawns
-    $ required_sandwich = make_random_sandwich()
+    $ required_sandwiches = [make_random_sandwich() for _ in range(3)]  # Generate 3 orders
+    $ placed_on_plate = set()  # Reset placed items
+    $ round_number = 1
     # Kitchen time
     scene bg kitchen
     # Sand witch pun (it's so bad)
@@ -128,13 +138,22 @@ init python:
         renpy.restart_interaction()
     
     def make_random_sandwich():
-        # sandwich must be 3–6 ingredients
-        length = random.randint(3, 6)
-        # at least 2 slots will be bread (first + last)
-        # fill the middle with random ingredients (no restriction on repeats, unless you want unique)
+        # length grows each round, starting at 4
+        length = 3 + store.round_number  # 1st round = 4, then 5, then 6, etc.
+        # sandwich must always have at least 2 bread (first + last)
         middle = random.choices([i for i in INGREDIENTS if i != "bread"], k=length - 2)
         sandwich = ["bread"] + middle + ["bread"]
         return sandwich
+
+
+    def clear_plate():
+        # Just reset placed items
+        store.placed_parts = []
+        store.placed_on_plate = set()
+        renpy.notify("Plate cleared!")
+        renpy.restart_interaction()
+
+    
     def place_ingredient(drop_target, drags):
         drag = drags[0]
         if drop_target.drag_name == "plate":
@@ -154,15 +173,66 @@ init python:
                 ingredient_name = "bacon"
                 
             # Always add each ingredient separately (allows duplicates)
-            placed_parts.append(ingredient_name)
+            store.placed_parts.append(ingredient_name)
             store.placed_on_plate.add(ingredient_name)
+            
+            # Remove the dragged ingredient from its spawn list so it doesn't reappear
+            remove_ingredient_from_spawns(drag.drag_name)
+            
+            # Debug: Show what we have vs what we need
+            renpy.notify("Added: " + ingredient_name + " (" + str(len(store.placed_parts)) + "/" + str(len(store.required_sandwich)) + ")")
             
             # refresh screen so HUD updates
             renpy.restart_interaction()
-            # check win condition
-            if placed_parts == required_sandwich:
-                store.has_won = True
-                renpy.restart_interaction()
+            
+            # check win condition - compare lists exactly
+            if len(store.placed_parts) == len(store.required_sandwich):
+                if store.placed_parts == store.required_sandwich:
+                    store.has_won = True
+                    store.score += (round_number * (30/(time_left)))  # Increment score
+                    renpy.notify("Order complete! Score: " + str(store.score))
+                    renpy.restart_interaction()
+                else:
+                    # Debug: show what doesn't match
+                    renpy.notify("Order doesn't match! Got: " + str(store.placed_parts) + " Need: " + str(store.required_sandwich))
+    
+    def remove_ingredient_from_spawns(ingredient_id):
+        # Remove ingredient from appropriate spawn list
+        if ingredient_id.startswith("bread_"):
+            store.bread_spawns = [item for item in store.bread_spawns if item['id'] != ingredient_id]
+        elif ingredient_id.startswith("peanut_"):
+            store.peanut_spawns = [item for item in store.peanut_spawns if item['id'] != ingredient_id]
+        elif ingredient_id.startswith("jamm_"):
+            store.jam_spawns = [item for item in store.jam_spawns if item['id'] != ingredient_id]
+        elif ingredient_id.startswith("lettuc_"):
+            store.lettuc_spawns = [item for item in store.lettuc_spawns if item['id'] != ingredient_id]
+        elif ingredient_id.startswith("tomato_"):
+            store.tomato_spawns = [item for item in store.tomato_spawns if item['id'] != ingredient_id]
+        elif ingredient_id.startswith("bacon_"):
+            store.bacon_spawns = [item for item in store.bacon_spawns if item['id'] != ingredient_id]
+
+            
+    
+    def start_new_order():
+        # Clear the plate and generate new order
+        store.placed_parts = []
+        store.placed_on_plate = set()
+        store.has_won = False
+        store.round_number += 1  # INCREASE ROUND
+        store.required_sandwich = make_random_sandwich()
+        store.time_left = 30
+        store.game_over = False
+        # Clear all spawned ingredients
+        store.bread_spawns = []
+        store.peanut_spawns = []
+        store.jam_spawns = []
+        store.lettuc_spawns = []
+        store.tomato_spawns = []
+        store.bacon_spawns = []
+        renpy.notify("Round " + str(store.round_number) + " - New order! Score: " + str(store.score))
+        renpy.restart_interaction()
+
+
     def check_done():
         try:
             if not required_sandwich:
@@ -181,7 +251,8 @@ init python:
                 return
             # tells u u won
             store.has_won = True
-            renpy.notify("You won!")
+            store.score += 1  # Increment score here too as backup
+            renpy.notify("You won! Score: " + str(store.score))
             renpy.restart_interaction()
         except Exception as e:
             renpy.notify("Error checking order.")

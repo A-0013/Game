@@ -94,8 +94,11 @@ style frame:
 ## and id "window" to apply style properties.
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#say
-
 screen sandwich_game():
+    # global countdown
+    if not game_over and not has_won:
+        timer 1.0 repeat True action If(time_left > 0, SetVariable("time_left", time_left - 1), SetVariable("game_over", True))
+
     #displays the hud
     frame:
         xalign 0.5
@@ -106,29 +109,43 @@ screen sandwich_game():
         hbox:
             spacing 50
            
+            # Score display
             # Required Order
             vbox:
                 text "Required Order:" size 24 color "#ffff00" xalign 0.5
-               
                 for i, ingredient in enumerate(required_sandwich):
-                    # this is so much debugging
                     $ display_name = "Bottom Bread" if ingredient == "lower_bread" else ("Top Bread" if ingredient == "topmost_bread" else ("Peanut Butter" if ingredient == "peanutbutter" else ("Jelly" if ingredient == "jelly" else ingredient)))
-                   
                     text "[i+1]. [display_name]" size 18 color "#ffff00" xalign 0.5
+
+            frame:
+                xalign 0.5
+                yalign 0.05
+                background "#000000aa"
+                padding (20, 10)
+            
+                hbox:
+                    spacing 50
+                
+                    # Score + Timer
+                    vbox:
+                        text "Score: [score]" size 28 color "#00ff00" xalign 0.5
+                        text "Time Left: [time_left]" size 28 color "#ff4444" xalign 0.5
+                        textbutton "Clear Plate":
+                            xalign 0.5
+                            action Function(clear_plate)
+
            
             # Current Progress
             vbox:
                 text "Current Order:" size 24 color "#ffffff" xalign 0.5
-                # Just display what's actually been placed
                 $ plate_display = list(placed_parts)
-               
                 if plate_display:
                     for i, ingredient in enumerate(plate_display):
                         $ display_name = "Bottom Bread" if ingredient == "lower_bread" else ("Top Bread" if ingredient == "topmost_bread" else ("Peanut Butter" if ingredient == "peanutbutter" else ("Jelly" if ingredient == "jelly" else ingredient)))
                         $ text_color = "#00ff00" if ingredient in required_sandwich else "#ff0000"
                         text "[i+1]. [display_name]" size 18 color text_color xalign 0.5
                 else:
-                    text "No ingredients on the plate" size 18 color "#888888" xalign 0.5
+                    text "No ingredients on the plate" size 18 color "#888888" xalign 0.
 
     # Spawner buttons row
     hbox:
@@ -235,17 +252,36 @@ screen sandwich_game():
         frame:
             xalign 0.5
             yalign 0.5
-            text "You won!":
-                xalign 0.5
-                yalign 0.5
-                size 40
-        textbutton "OK":
+            background "#000000dd"
+            padding (30, 20)
+            vbox:
+                spacing 10
+                text "Order Complete!" size 40 color "#00ff00" xalign 0.5
+                text "Score: [score]" size 32 color "#ffff00" xalign 0.5
+                textbutton "New Order":
+                    xalign 0.5
+                    action Function(start_new_order)
+                textbutton "Quit Game":
+                    xalign 0.5
+                    action [Return("quit"), SetVariable("has_won", False)]
+
+    if game_over:
+        frame:
             xalign 0.5
-            yalign 0.7
-            action [Return("win"), SetVariable("has_won", False), 
-                    SetVariable("bread_spawns", []), SetVariable("peanut_spawns", []),
-                    SetVariable("jam_spawns", []), SetVariable("lettuc_spawns", []),
-                    SetVariable("tomato_spawns", []), SetVariable("bacon_spawns", [])]
+            yalign 0.5
+            background "#880000dd"
+            padding (30, 20)
+            vbox:
+                spacing 10
+                text "GAME OVER" size 50 color "#ff0000" xalign 0.5
+                text "Final Score: [score]" size 32 color "#ffff00" xalign 0.5
+                textbutton "Play Again":
+                    xalign 0.5
+                    action [SetVariable("score", 0), Function(start_new_order)]
+                textbutton "Quit Game":
+                    xalign 0.5
+                    action Return("quit")
+
 
     ## If there's a side image, display it above the text. Do not display on
     ## the phone variant - there's no room.
