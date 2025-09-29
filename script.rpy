@@ -67,10 +67,10 @@ init python:
             'x': 150 + x_offset,
             'y': 300 + y_offset
         })
-        # Debug notification (very necessary)
-        renpy.notify("Spawned bread! Total: " + str(len(store.bread_spawns)))
+        # Enhanced notification with emoji
+        renpy.notify("🍞 Bread added to station!")
         renpy.restart_interaction()
-        
+
     #more of the same
     def spawn_peanut():
         peanut_count = len(store.peanut_spawns)
@@ -82,9 +82,9 @@ init python:
             'x': 350 + x_offset,
             'y': 300 + y_offset
         })
-        renpy.notify("Spawned peanut butter!")
+        renpy.notify("🥜 Peanut butter ready!")
         renpy.restart_interaction()
-        
+
     def spawn_jam():
         jam_count = len(store.jam_spawns)
         x_offset = (jam_count % 5) * 130
@@ -95,9 +95,9 @@ init python:
             'x': 550 + x_offset,
             'y': 300 + y_offset
         })
-        renpy.notify("Spawned jelly!")
+        renpy.notify("🍇 Jelly prepared!")
         renpy.restart_interaction()
-        
+
     def spawn_lettuce():
         lettuc_count = len(store.lettuc_spawns)
         x_offset = (lettuc_count % 5) * 130
@@ -108,9 +108,9 @@ init python:
             'x': 750 + x_offset,
             'y': 300 + y_offset
         })
-        renpy.notify("Spawned lettuce!")
+        renpy.notify("🥬 Fresh lettuce added!")
         renpy.restart_interaction()
-        
+
     def spawn_tomato():
         tomato_count = len(store.tomato_spawns)
         x_offset = (tomato_count % 5) * 130
@@ -121,9 +121,9 @@ init python:
             'x': 850 + x_offset,
             'y': 300 + y_offset
         })
-        renpy.notify("Spawned tomato!")
+        renpy.notify("🍅 Tomato sliced!")
         renpy.restart_interaction()
-        
+
     def spawn_bacon():
         bacon_count = len(store.bacon_spawns)
         x_offset = (bacon_count % 5) * 130
@@ -134,9 +134,9 @@ init python:
             'x': 650 + x_offset,
             'y': 300 + y_offset
         })
-        renpy.notify("Spawned bacon!")
+        renpy.notify("🥓 Crispy bacon ready!")
         renpy.restart_interaction()
-    
+
     def make_random_sandwich():
         # length grows each round, starting at 4
         length = 3 + store.round_number  # 1st round = 4, then 5, then 6, etc.
@@ -150,10 +150,10 @@ init python:
         # Just reset placed items
         store.placed_parts = []
         store.placed_on_plate = set()
-        renpy.notify("Plate cleared!")
+        renpy.notify("🧹 Plate cleared! Ready for new order!")
         renpy.restart_interaction()
 
-    
+
     def place_ingredient(drop_target, drags):
         drag = drags[0]
         if drop_target.drag_name == "plate":
@@ -171,31 +171,31 @@ init python:
                 ingredient_name = "tomato"
             elif drag.drag_name.startswith("bacon_"):
                 ingredient_name = "bacon"
-                
+
             # Always add each ingredient separately (allows duplicates)
             store.placed_parts.append(ingredient_name)
             store.placed_on_plate.add(ingredient_name)
-            
+
             # Remove the dragged ingredient from its spawn list so it doesn't reappear
             remove_ingredient_from_spawns(drag.drag_name)
-            
-            # Debug: Show what we have vs what we need
-            renpy.notify("Added: " + ingredient_name + " (" + str(len(store.placed_parts)) + "/" + str(len(store.required_sandwich)) + ")")
-            
+
+            # Enhanced feedback with emojis
+            renpy.notify("✅ Added " + ingredient_name.title() + " (" + str(len(store.placed_parts)) + "/" + str(len(store.required_sandwich)) + ")")
+
             # refresh screen so HUD updates
             renpy.restart_interaction()
-            
+
             # check win condition - compare lists exactly
             if len(store.placed_parts) == len(store.required_sandwich):
                 if store.placed_parts == store.required_sandwich:
                     store.has_won = True
                     store.score += (round_number * (30/(time_left)))  # Increment score
-                    renpy.notify("Order complete! Score: " + str(store.score))
+                    renpy.notify("🎉 Perfect! Order complete! Score: " + str(store.score))
                     renpy.restart_interaction()
                 else:
-                    # Debug: show what doesn't match
-                    renpy.notify("Order doesn't match! Got: " + str(store.placed_parts) + " Need: " + str(store.required_sandwich))
-    
+                    # Enhanced error feedback
+                    renpy.notify("❌ Order doesn't match! Check the required ingredients!")
+
     def remove_ingredient_from_spawns(ingredient_id):
         # Remove ingredient from appropriate spawn list
         if ingredient_id.startswith("bread_"):
@@ -211,8 +211,8 @@ init python:
         elif ingredient_id.startswith("bacon_"):
             store.bacon_spawns = [item for item in store.bacon_spawns if item['id'] != ingredient_id]
 
-            
-    
+
+
     def start_new_order():
         # Clear the plate and generate new order
         store.placed_parts = []
@@ -229,7 +229,7 @@ init python:
         store.lettuc_spawns = []
         store.tomato_spawns = []
         store.bacon_spawns = []
-        renpy.notify("Round " + str(store.round_number) + " - New order! Score: " + str(store.score))
+        renpy.notify("📋 Round " + str(store.round_number) + " - New order incoming! Score: " + str(store.score))
         renpy.restart_interaction()
 
 
