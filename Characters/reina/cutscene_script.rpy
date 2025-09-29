@@ -24,7 +24,7 @@ init python:
                 sound_count = 5
             for _ in range(sound_count):
                 randosound = renpy.random.randint(1, 11)
-                renpy.sound.queue(f"audio/pack1/DialogueSFX/bleep026.ogg", channel="beep1", loop=False)
+                renpy.sound.queue(f"audio/pack1/DialogueSFX/bleep_main.ogg", channel="beep1", loop=False)
         elif event == "end" or event == "slow_done": # If there is a pause in the dialogue or the text has finished displaying
             renpy.sound.stop(channel="beep1")
 
@@ -328,3 +328,4 @@ label no:
     # This ends the game.
 
     return
+
