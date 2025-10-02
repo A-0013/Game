@@ -95,6 +95,9 @@ style frame:
 ##
 ## https://www.renpy.org/doc/html/screen_special.html#say
 screen sandwich_game():
+    # Add countertop background
+    add "bg_imagesMain/environment/environment_counter_render1.png" xalign 0.5 yalign 0.5
+
     # global countdown
     if not game_over and not has_won:
         timer 1.0 repeat True action If(time_left > 0, SetVariable("time_left", time_left - 1), SetVariable("game_over", True))
