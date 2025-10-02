@@ -342,7 +342,7 @@ label no:
 
         play LoNoise bgm_rest
 
-        show show Reina_norm talk at center:
+        show Reina_norm talk at center:
             yalign 1.3 zoom 0.65
         with dissolve
 
@@ -358,3 +358,4 @@ label no:
     # This ends the game.
 
     return
+
