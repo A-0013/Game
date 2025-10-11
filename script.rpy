@@ -4,13 +4,13 @@
 define e = Character("Eileen")
 
 # Reina Ch images
-image Reina_norm neutral = "images/people_reina_neutral_casual.png"
-image Reina_work neutral = "images/people_reina_neutral_work.png"
-image Reina_norm talk = "images/people_reina_neutral_open_casual.png"
-image Reina_work talk = "images/people_reina_neutral_open_work.png"
-image Reina_norm smile = "images/people_reina_happy_casual.png"
-image Reina_work smile = "images/people_reina_happy_work.png"
-image Reina_work angry = "images/people_reina_angry_work.png"
+image Reina_norm neutral = "images/people_reina_neutral_casual1.png"
+image Reina_work neutral = "images/people_reina_neutral_work1.png"
+image Reina_norm talk = "images/people_reina_neutral_open_casual1.png"
+image Reina_work talk = "images/people_reina_neutral_open_work1.png"
+image Reina_norm smile = "images/people_reina_happy_casual1.png"
+image Reina_work smile = "images/people_reina_happy_work1.png"
+image Reina_work angry = "images/people_reina_angry_work1.png"
 
 # Boss Ch images
 image Boss neutral = "images/people_boss_neutral1.png"
@@ -19,9 +19,9 @@ image Boss angry = "images/people_boss_angry.png"
 image Boss happy = "images/people_boss_happy.png"
 
 # Background images
-image bg kitchen = "images/fast_food_interior_day.png"
-image shop outside = "images/fast_food_entrance_day.png"
-image shop inside = "images/fast_food_interior_day.png"
+image bg kitchen = "images/environment_interior.png"
+image shop outside = "images/environment_exterior1.png"
+image shop inside = "images/environment_interior.png"
 
 # Audio definitions
 define audio.bgm_rest = "audio/Time_for_Rest.ogg"
@@ -103,8 +103,8 @@ init python:
         bread_id = "bread_" + str(bread_count)
         store.bread_spawns.append({
             'id': bread_id,
-            'x': 150 + x_offset,
-            'y': 300 + y_offset
+            'x': 1225,
+            'y': 600
         })
         renpy.notify("🍞 Bread added to station!")
         renpy.restart_interaction()

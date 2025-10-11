@@ -96,7 +96,7 @@ style frame:
 ## https://www.renpy.org/doc/html/screen_special.html#say
 screen sandwich_game():
     # Add countertop background
-    add "images/environment_counter_render1.png" xalign 0.5 yalign 0.5
+    add "images/environment_counter_render2.png" xalign 0.5 yalign 0.5
     
     # Global countdown timer
     if not game_over and not has_won:
@@ -152,81 +152,81 @@ screen sandwich_game():
         spacing 20
 
     imagebutton:
-        idle Transform("TM.png", xysize=(140, 110), alpha=0)
-        hover Transform("TM.png", xysize=(140, 110), alpha=0)
+        idle Transform("TM.png", xysize=(140, 110), alpha=0.5)
+        hover Transform("TM.png", xysize=(140, 110), alpha=0.5)
         action Function(spawn_tomato)
         xalign 0.2
-        yalign 0.82
+        yalign 0.89
 
     imagebutton:
-        idle Transform("#0000", xysize=(130, 110),alpha=0)
-        hover Transform("LT.png", xysize=(130, 110),alpha=0)
+        idle Transform("#0000", xysize=(130, 110),alpha=0.5)
+        hover Transform("LT.png", xysize=(130, 110),alpha=0.5)
         action Function(spawn_lettuce)
         xalign 0.31
-        yalign 0.82
+        yalign 0.89
 
     imagebutton:
-        idle Transform("#0000", xysize=(130, 110),alpha=0)
-        hover Transform("BC.png", xysize=(130, 110),alpha=0)
+        idle Transform("#0000", xysize=(130, 110),alpha=0.5)
+        hover Transform("BC.png", xysize=(130, 110),alpha=0.5)
         action Function(spawn_bacon)
         xalign 0.265
-        yalign 0.555
+        yalign 0.63
 
     imagebutton:
-        idle Transform("#0000", xysize=(75, 90),alpha=0) 
-        hover Transform("JL.png", xysize=(75, 90),alpha=0)
+        idle Transform("#0000", xysize=(75, 90),alpha=0.5) 
+        hover Transform("JL.png", xysize=(75, 90),alpha=0.5)
         action Function(spawn_jam)
         xalign 0.782
-        yalign 0.56
+        yalign 0.63
 
     imagebutton:
-        idle Transform("#0000", xysize=(75, 90),alpha=0)
-        hover Transform("PB.png", xysize=(75, 90),alpha=0)
+        idle Transform("#0000", xysize=(75, 90),alpha=0.5)
+        hover Transform("PB.png", xysize=(75, 90),alpha=0.5)
         action Function(spawn_peanut)
         xalign 0.84
-        yalign 0.56
+        yalign 0.63
     
     imagebutton:
-        idle Transform("#0000", xysize=(155, 110),alpha=0)
-        hover Transform("PB.png", xysize=(155, 110),alpha=0)
+        idle Transform("#0000", xysize=(155, 110),alpha=0.5)
+        hover Transform("PB.png", xysize=(155, 110),alpha=0.5)
         action Function(spawn_onion)
-        xalign 0.395
-        yalign 0.82
+        xalign 0.41
+        yalign 0.9
     
     imagebutton:
-        idle Transform("#0000", xysize=(155, 110),alpha=0)
-        hover Transform("PB.png", xysize=(155, 110),alpha=0)
+        idle Transform("#0000", xysize=(155, 110),alpha=0.5)
+        hover Transform("PB.png", xysize=(155, 110),alpha=0.5)
         action Function(spawn_cheese)
         xalign 0.34
-        yalign 0.68
+        yalign 0.75
     
     imagebutton:
-        idle Transform("#0000", xysize=(155, 110),alpha=0)
-        hover Transform("PB.png", xysize=(155, 110),alpha=0)
+        idle Transform("#0000", xysize=(155, 110),alpha=0.5)
+        hover Transform("PB.png", xysize=(155, 110),alpha=0.5)
         action Function(spawn_turkey)
         xalign 0.24
-        yalign 0.68
+        yalign 0.75
 
     imagebutton:
-        idle Transform("#0000", xysize=(55, 110),alpha=0)
-        hover Transform("PB.png", xysize=(55, 110),alpha=0)
+        idle Transform("#0000", xysize=(55, 110),alpha=0.5)
+        hover Transform("PB.png", xysize=(55, 110),alpha=0.5)
         action Function(spawn_mustard)
         xalign 0.9
-        yalign 0.56
+        yalign 0.63
 
     imagebutton:
-        idle Transform("#0000", xysize=(260, 160), alpha=0)
-        hover Transform("PB.png", xysize=(260, 160), alpha=0)  # Update image name as needed
+        idle Transform("#0000", xysize=(260, 160), alpha=0.5)
+        hover Transform("PB.png", xysize=(260, 160), alpha=0.5)  # Update image name as needed
         action Function(spawn_bread_roll)
         xalign 0.03  # Adjust position as needed
-        yalign 0.8
+        yalign 0.9
     
     imagebutton:
-        idle Transform("#0000", xysize=(120, 170),alpha=0)
-        hover Transform("SB.png", xysize=(120, 170),alpha=0)
+        idle Transform("#0000", xysize=(120, 170),alpha=0.5)
+        hover Transform("SB.png", xysize=(120, 170),alpha=0.5)
         action Function(spawn_bread)
         xalign 0.13
-        yalign 0.62
+        yalign 0.7
     
     textbutton "🗑️ Trash":
         idle_background "#0000"    # transparent or color hex
@@ -234,7 +234,7 @@ screen sandwich_game():
         text_size 40
         action Function(clear_plate)
         xalign 0.84
-        yalign 0.85
+        yalign 0.97
         xsize 220
         ysize 270
 
@@ -256,7 +256,7 @@ screen sandwich_game():
         for bread_data in bread_spawns:
             drag:
                 drag_name bread_data['id']
-                child Transform("bread.png", xysize=(120, 120))
+                child Transform("bread_white.png", xysize=(120, 120))
                 draggable True
                 xpos bread_data['x']
                 ypos bread_data['y']
@@ -264,7 +264,7 @@ screen sandwich_game():
         for roll_data in top_roll_spawns:
             drag:
                 drag_name roll_data['id']
-                child Transform("bread_roll_top_rend_250.png", xysize=(120, 120))  # Use your top roll image
+                child Transform("bread_roll_top.png", xysize=(120, 120))  # Use your top roll image
                 draggable True
                 xpos roll_data['x']
                 ypos roll_data['y']
@@ -272,7 +272,7 @@ screen sandwich_game():
         for roll_data in bottom_roll_spawns:
             drag:
                 drag_name roll_data['id']
-                child Transform("bread_roll_bottom_rend_250.png", xysize=(120, 120))  # Use your bottom roll image
+                child Transform("bread_roll_bottom.png", xysize=(120, 120))  # Use your bottom roll image
                 draggable True
                 xpos roll_data['x']
                 ypos roll_data['y']
@@ -281,7 +281,7 @@ screen sandwich_game():
         for peanut_data in peanut_spawns:
             drag:
                 drag_name peanut_data['id']
-                child Transform("Peanut.png", xysize=(120, 120))
+                child Transform("spread_peanutbutter.png", xysize=(120, 120))
                 draggable True
                 xpos peanut_data['x']
                 ypos peanut_data['y']
@@ -290,7 +290,7 @@ screen sandwich_game():
         for jam_data in jam_spawns:
             drag:
                 drag_name jam_data['id']
-                child Transform("jamm.png", xysize=(120, 120))
+                child Transform("spread_jelly.png", xysize=(120, 120))
                 draggable True
                 xpos jam_data['x']
                 ypos jam_data['y']
@@ -299,7 +299,7 @@ screen sandwich_game():
         for bacon_data in bacon_spawns:
             drag:
                 drag_name bacon_data['id']
-                child Transform("bacon.png", xysize=(120, 120))
+                child Transform("meat_bacon.png", xysize=(120, 120))
                 draggable True
                 xpos bacon_data['x']
                 ypos bacon_data['y']
@@ -308,7 +308,7 @@ screen sandwich_game():
         for lettuc_data in lettuc_spawns:
             drag:
                 drag_name lettuc_data['id']
-                child Transform("lettuc.png", xysize=(120, 120))
+                child Transform("veg_lettuce.png", xysize=(120, 120))
                 draggable True
                 xpos lettuc_data['x']
                 ypos lettuc_data['y']
@@ -317,7 +317,7 @@ screen sandwich_game():
         for tomato_data in tomato_spawns:
             drag:
                 drag_name tomato_data['id']
-                child Transform("tomato.png", xysize=(120, 120))
+                child Transform("veg_tomato.png", xysize=(120, 120))
                 draggable True
                 xpos tomato_data['x']
                 ypos tomato_data['y']
@@ -325,7 +325,7 @@ screen sandwich_game():
         for onion_data in onion_spawns:
             drag:
                 drag_name onion_data['id']
-                child Transform("veg_onion_rend_250.png", xysize=(120, 120))
+                child Transform("veg_onion.png", xysize=(120, 120))
                 draggable True
                 xpos onion_data['x']
                 ypos onion_data['y']
@@ -333,7 +333,7 @@ screen sandwich_game():
         for turkey_data in turkey_spawns:
             drag:
                 drag_name turkey_data['id']
-                child Transform("meat_turkey_rend_250.png", xysize=(120, 120))
+                child Transform("meat_turkey.png", xysize=(120, 120))
                 draggable True
                 xpos turkey_data['x']
                 ypos turkey_data['y']
@@ -341,7 +341,7 @@ screen sandwich_game():
         for cheese_data in cheese_spawns:
             drag:
                 drag_name cheese_data['id']
-                child Transform("meat_cheese_rend_250.png", xysize=(120, 120))
+                child Transform("meat_cheese.png", xysize=(120, 120))
                 draggable True
                 xpos cheese_data['x']
                 ypos cheese_data['y']
@@ -349,7 +349,7 @@ screen sandwich_game():
         for mustard_data in mustard_spawns:
             drag:
                 drag_name mustard_data['id']
-                child Transform("spread_mustard_rend_250.png", xysize=(120, 120))
+                child Transform("spread_mustard1.png", xysize=(120, 120))
                 draggable True
                 xpos mustard_data['x']
                 ypos mustard_data['y']
