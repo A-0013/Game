@@ -96,13 +96,13 @@ style frame:
 ## https://www.renpy.org/doc/html/screen_special.html#say
 screen sandwich_game():
     # Add countertop background
-    add "bg_imagesMain/environment/environment_counter_render1.png" xalign 0.5 yalign 0.5
-
-    # global countdown
+    add "images/environment_counter_render1.png" xalign 0.5 yalign 0.5
+    
+    # Global countdown timer
     if not game_over and not has_won:
-        timer 1.0 repeat True action If(time_left > 0, SetVariable("time_left", time_left - 1), SetVariable("game_over", True))
+        timer 1.0 repeat True action If(time_left > 0, SetVariable("time_left", time_left - 1), [SetVariable("game_over", True), If(reached_level_5, SetVariable("bad_ending_triggered", True), NullAction())])
 
-    #displays the hud
+    # Main HUD display
     frame:
         xalign 0.5
         yalign 0.05
@@ -112,14 +112,14 @@ screen sandwich_game():
         hbox:
             spacing 50
 
-            # Score display
-            # Required Order
+            # Required Order section
             vbox:
                 text "📋 Required Order:" size 24 color "#4fc3f7" xalign 0.5
-                for i, ingredient in enumerate(required_sandwich):
+                for i, ingredient in enumerate(store.required_sandwich):
                     $ display_name = "Bottom Bread" if ingredient == "lower_bread" else ("Top Bread" if ingredient == "topmost_bread" else ("Peanut Butter" if ingredient == "peanutbutter" else ("Jelly" if ingredient == "jelly" else ingredient)))
                     text "[i+1]. [display_name]" size 18 color "#ffff00" xalign 0.5
 
+            # Score and Timer frame
             frame:
                 xalign 0.5
                 yalign 0.05
@@ -129,19 +129,13 @@ screen sandwich_game():
                 hbox:
                     spacing 50
 
-                    # Score + Timer
+                    # Score + Timer + Clear buttons
                     vbox:
-                        text "🎯 Score: [score]" size 28 color "#4caf50" xalign 0.5
-                        text "⏰ Time Left: [time_left]" size 28 color "#ff4444" xalign 0.5
-                        textbutton "🧹 Clear Plate":
-                            xalign 0.5
-                            background "#f44336"
-                            hover_background "#d32f2f"
-                            text_color "#ffffff"
-                            action Function(clear_plate)
+                        text "Score: [score]" size 35 color "#4caf50" xalign 0.5
+                        text "Time Left: [time_left]" size 35 color "#ff4444" xalign 0.5
+                        text "Goal: 5 sandwhiches" size 24 color "#4fc3f7" xalign 0.5
 
-
-            # Current Progress
+            # Current Progress section
             vbox:
                 text "🍽️ Current Order:" size 24 color "#4fc3f7" xalign 0.5
                 $ plate_display = list(placed_parts)
@@ -151,61 +145,114 @@ screen sandwich_game():
                         $ text_color = "#00ff00" if ingredient in required_sandwich else "#ff0000"
                         text "[i+1]. [display_name]" size 18 color text_color xalign 0.5
                 else:
-                    text "No ingredients on the plate" size 18 color "#888888" xalign 0.
+                    text "No ingredients on the plate" size 18 color "#888888" xalign 0.5
 
-    # Spawner buttons row
     hbox:
         xpos 50 ypos 200
         spacing 20
 
-        # Bread spawner
-        imagebutton:
-            idle Transform("SB.png", xysize=(80, 80))
-            hover Transform("SB.png", xysize=(85, 85))
-            action Function(spawn_bread)
+    imagebutton:
+        idle Transform("TM.png", xysize=(140, 110), alpha=0)
+        hover Transform("TM.png", xysize=(140, 110), alpha=0)
+        action Function(spawn_tomato)
+        xalign 0.2
+        yalign 0.82
 
-        # Peanut butter spawner (you'll need PB.png)
-        imagebutton:
-            idle Transform("PB.png", xysize=(80, 80))
-            hover Transform("PB.png", xysize=(85, 85))
-            action Function(spawn_peanut)
+    imagebutton:
+        idle Transform("#0000", xysize=(130, 110),alpha=0)
+        hover Transform("LT.png", xysize=(130, 110),alpha=0)
+        action Function(spawn_lettuce)
+        xalign 0.31
+        yalign 0.82
 
-        # Jelly spawner (you'll need JL.png)
-        imagebutton:
-            idle Transform("JL.png", xysize=(80, 80))
-            hover Transform("JL.png", xysize=(85, 85))
-            action Function(spawn_jam)
+    imagebutton:
+        idle Transform("#0000", xysize=(130, 110),alpha=0)
+        hover Transform("BC.png", xysize=(130, 110),alpha=0)
+        action Function(spawn_bacon)
+        xalign 0.265
+        yalign 0.555
 
-        # Bacon spawner (you'll need BC.png)
-        imagebutton:
-            idle Transform("BC.png", xysize=(80, 80))
-            hover Transform("BC.png", xysize=(85, 85))
-            action Function(spawn_bacon)
+    imagebutton:
+        idle Transform("#0000", xysize=(75, 90),alpha=0) 
+        hover Transform("JL.png", xysize=(75, 90),alpha=0)
+        action Function(spawn_jam)
+        xalign 0.782
+        yalign 0.56
 
-        # Lettuce spawner (you'll need LT.png)
-        imagebutton:
-            idle Transform("LT.png", xysize=(80, 80))
-            hover Transform("LT.png", xysize=(85, 85))
-            action Function(spawn_lettuce)
+    imagebutton:
+        idle Transform("#0000", xysize=(75, 90),alpha=0)
+        hover Transform("PB.png", xysize=(75, 90),alpha=0)
+        action Function(spawn_peanut)
+        xalign 0.84
+        yalign 0.56
+    
+    imagebutton:
+        idle Transform("#0000", xysize=(155, 110),alpha=0)
+        hover Transform("PB.png", xysize=(155, 110),alpha=0)
+        action Function(spawn_onion)
+        xalign 0.395
+        yalign 0.82
+    
+    imagebutton:
+        idle Transform("#0000", xysize=(155, 110),alpha=0)
+        hover Transform("PB.png", xysize=(155, 110),alpha=0)
+        action Function(spawn_cheese)
+        xalign 0.34
+        yalign 0.68
+    
+    imagebutton:
+        idle Transform("#0000", xysize=(155, 110),alpha=0)
+        hover Transform("PB.png", xysize=(155, 110),alpha=0)
+        action Function(spawn_turkey)
+        xalign 0.24
+        yalign 0.68
 
-        # Tomato spawner (you'll need TM.png)
-        imagebutton:
-            idle Transform("TM.png", xysize=(80, 80))
-            hover Transform("TM.png", xysize=(85, 85))
-            action Function(spawn_tomato)
+    imagebutton:
+        idle Transform("#0000", xysize=(55, 110),alpha=0)
+        hover Transform("PB.png", xysize=(55, 110),alpha=0)
+        action Function(spawn_mustard)
+        xalign 0.9
+        yalign 0.56
 
+    imagebutton:
+        idle Transform("#0000", xysize=(260, 160), alpha=0)
+        hover Transform("PB.png", xysize=(260, 160), alpha=0)  # Update image name as needed
+        action Function(spawn_bread_roll)
+        xalign 0.03  # Adjust position as needed
+        yalign 0.8
+    
+    imagebutton:
+        idle Transform("#0000", xysize=(120, 170),alpha=0)
+        hover Transform("SB.png", xysize=(120, 170),alpha=0)
+        action Function(spawn_bread)
+        xalign 0.13
+        yalign 0.62
+    
+    textbutton "🗑️ Trash":
+        idle_background "#0000"    # transparent or color hex
+        text_color "#ff0000ff"
+        text_size 40
+        action Function(clear_plate)
+        xalign 0.84
+        yalign 0.85
+        xsize 220
+        ysize 270
+
+
+
+    # Drag and drop group
     draggroup:
-        # Plate (target)
+        # Plate (drop target)
         drag:
             drag_name "plate"
-            child Transform("plate.jpg", xysize=(200, 200))
+            child Transform("plate.jpg", xysize=(200, 160),alpha=0.5)
             draggable False
             droppable True
             xalign 0.5
-            yalign 0.5
+            yalign 0.65
             dropped place_ingredient
 
-        # Spawned ingredient instances
+        # Spawned bread instances
         for bread_data in bread_spawns:
             drag:
                 drag_name bread_data['id']
@@ -214,6 +261,23 @@ screen sandwich_game():
                 xpos bread_data['x']
                 ypos bread_data['y']
 
+        for roll_data in top_roll_spawns:
+            drag:
+                drag_name roll_data['id']
+                child Transform("bread_roll_top_rend_250.png", xysize=(120, 120))  # Use your top roll image
+                draggable True
+                xpos roll_data['x']
+                ypos roll_data['y']
+
+        for roll_data in bottom_roll_spawns:
+            drag:
+                drag_name roll_data['id']
+                child Transform("bread_roll_bottom_rend_250.png", xysize=(120, 120))  # Use your bottom roll image
+                draggable True
+                xpos roll_data['x']
+                ypos roll_data['y']
+
+        # Spawned peanut butter instances
         for peanut_data in peanut_spawns:
             drag:
                 drag_name peanut_data['id']
@@ -222,6 +286,7 @@ screen sandwich_game():
                 xpos peanut_data['x']
                 ypos peanut_data['y']
 
+        # Spawned jelly instances
         for jam_data in jam_spawns:
             drag:
                 drag_name jam_data['id']
@@ -230,6 +295,7 @@ screen sandwich_game():
                 xpos jam_data['x']
                 ypos jam_data['y']
 
+        # Spawned bacon instances
         for bacon_data in bacon_spawns:
             drag:
                 drag_name bacon_data['id']
@@ -238,6 +304,7 @@ screen sandwich_game():
                 xpos bacon_data['x']
                 ypos bacon_data['y']
 
+        # Spawned lettuce instances
         for lettuc_data in lettuc_spawns:
             drag:
                 drag_name lettuc_data['id']
@@ -246,6 +313,7 @@ screen sandwich_game():
                 xpos lettuc_data['x']
                 ypos lettuc_data['y']
 
+        # Spawned tomato instances
         for tomato_data in tomato_spawns:
             drag:
                 drag_name tomato_data['id']
@@ -254,39 +322,137 @@ screen sandwich_game():
                 xpos tomato_data['x']
                 ypos tomato_data['y']
 
-    if has_won:
-        frame:
-            xalign 0.5
-            yalign 0.5
-            background "#000000dd"
-            padding (30, 20)
-            vbox:
-                spacing 10
-                text "Order Complete!" size 40 color "#00ff00" xalign 0.5
-                text "Score: [score]" size 32 color "#ffff00" xalign 0.5
-                textbutton "New Order":
-                    xalign 0.5
-                    action Function(start_new_order)
-                textbutton "Quit Game":
-                    xalign 0.5
-                    action [Return("quit"), SetVariable("has_won", False)]
+        for onion_data in onion_spawns:
+            drag:
+                drag_name onion_data['id']
+                child Transform("veg_onion_rend_250.png", xysize=(120, 120))
+                draggable True
+                xpos onion_data['x']
+                ypos onion_data['y']
 
+        for turkey_data in turkey_spawns:
+            drag:
+                drag_name turkey_data['id']
+                child Transform("meat_turkey_rend_250.png", xysize=(120, 120))
+                draggable True
+                xpos turkey_data['x']
+                ypos turkey_data['y']
+
+        for cheese_data in cheese_spawns:
+            drag:
+                drag_name cheese_data['id']
+                child Transform("meat_cheese_rend_250.png", xysize=(120, 120))
+                draggable True
+                xpos cheese_data['x']
+                ypos cheese_data['y']
+
+        for mustard_data in mustard_spawns:
+            drag:
+                drag_name mustard_data['id']
+                child Transform("spread_mustard_rend_250.png", xysize=(120, 120))
+                draggable True
+                xpos mustard_data['x']
+                ypos mustard_data['y']
+
+    # Win condition overlay
+    if has_won:
+        if good_ending_triggered:
+            # Automatically trigger good ending scene
+            timer 0.1 action [Call("good_ending")]
+        else:
+            # Regular win overlay for non-ending wins
+            frame:
+                xalign 0.5
+                yalign 0.5
+                background "#000000dd"
+                padding (30, 20)
+                vbox:
+                    spacing 10
+                    text "Order Complete!" size 40 color "#00ff00" xalign 0.5
+                    text "Score: [score]" size 32 color "#ffff00" xalign 0.5
+                    textbutton "New Order":
+                        xalign 0.5
+                        action [SetVariable("good_ending_triggered", False), Function(start_new_order)]
+                    textbutton "Quit Game":
+                        xalign 0.5
+                        action [Return("quit"), SetVariable("has_won", False), SetVariable("good_ending_triggered", False)]
+
+    # Game over overlay
     if game_over:
-        frame:
-            xalign 0.5
-            yalign 0.5
-            background "#880000dd"
-            padding (30, 20)
-            vbox:
-                spacing 10
-                text "GAME OVER" size 50 color "#ff0000" xalign 0.5
-                text "Final Score: [score]" size 32 color "#ffff00" xalign 0.5
-                textbutton "Play Again":
+        if bad_ending_triggered:
+            # Automatically trigger bad ending scene
+            timer 0.1 action [Call("bad_ending")]
+        else:
+            # Level 5 failure - show choice screen
+            # Dark overlay background
+            add Solid("#000000cc")
+            
+            # Main choice frame
+            frame:
+                xalign 0.5
+                yalign 0.5
+                xsize 600
+                ysize 400
+                background Frame("gui/frame.png", Borders(20, 20, 20, 20))
+                padding (40, 30)
+                
+                vbox:
+                    spacing 20
                     xalign 0.5
-                    action [SetVariable("score", 0), Function(start_new_order)]
-                textbutton "Quit Game":
-                    xalign 0.5
-                    action Return("quit")
+                    yalign 0.5
+                    
+                    # Title section with icon
+                    hbox:
+                        spacing 15
+                        xalign 0.5
+                        text "😰" size 60
+                        vbox:
+                            text "LEVEL [round_number] FAILED" size 45 color "#ff4444" xalign 0.5
+                            if round_number >= 5:
+                                text "You couldn't handle the pressure..." size 22 color "#ffaaaa" xalign 0.5
+                            else:
+                                text "Time's up! What will you do?" size 22 color "#ffaaaa" xalign 0.5
+                    
+                    # Score display
+                    frame:
+                        xalign 0.5
+                        background "#2a2a2a"
+                        padding (20, 15)
+                        vbox:
+                            spacing 5
+                            text "Final Score" size 18 color "#cccccc" xalign 0.5
+                            text "[score]" size 36 color "#ffd700" xalign 0.5
+                    
+                    # Choice message
+                    frame:
+                        xalign 0.5
+                        background "#4a1a1a"
+                        padding (15, 10)
+                        text "What will you do?" size 18 color "#ffaaaa" xalign 0.5
+                    
+                    # Button section
+                    hbox:
+                        spacing 20
+                        xalign 0.5
+                        
+                        textbutton "😔 Call it a day":
+                            xsize 200
+                            ysize 50
+                            background "#f44336"
+                            hover_background "#d32f2f"
+                            text_color "#ffffff"
+                            text_size 18
+                            action If(round_number >= 5, [SetVariable("bad_ending_triggered", True), SetVariable("game_over", False)], [SetVariable("score", 0), Return("quit")])
+                        
+                        textbutton "💪 Try to continue":
+                            xsize 200
+                            ysize 50
+                            background "#4caf50"
+                            hover_background "#45a049"
+                            text_color "#ffffff"
+                            text_size 18
+                            action [SetVariable("game_over", False), Function(continue_current_level)]
+
 
 
     ## If there's a side image, display it above the text. Do not display on
